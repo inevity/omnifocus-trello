@@ -9,6 +9,20 @@ Cards in lists having completed cards are marked as done. The user whose tasks
 are synced and the lists that are considered as having completed cards are
 configurable using the config file.
 
+Now some features and change log since v1.2.2 
+1. change to use bug_db hash from array
+2. use label red as flagged in of
+3. use label green as nested tag "When : Today" in of  
+   ref: https://inside.omnifocus.com/blog/the-forecast-tag.
+4. use due as due_date in of
+5. update of task once trello care have been updated according
+   card field dateLastActivity.  
+6. update depency omnifocus to 2.4 and add as submodule
+
+todos:  
+1. defer date maybe use the powerup feature.
+2. two-way sync.
+
 ## Usage
 
 1. Install
