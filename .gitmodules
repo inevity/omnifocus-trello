@@ -1,0 +1,4 @@
+[submodule "omnifocus"]
+	path = omnifocus
+	url = https://github.com/inevity/omnifocus.git
+	branch = master
