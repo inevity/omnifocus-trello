@@ -122,7 +122,12 @@ module OmniFocus::Trello
     end
 
    if due 
-      t = Time.parse(due)
+      duefix = due
+      if due.include? "T04:00:00.000Z" 
+	      # mean today, we need set it 23:00
+	      duefix = due.gsub("T04:00:00.000Z", "T15:00:00.000Z")
+      end
+      t = Time.parse(duefix)
    end
    if today != nil 
        if t 
