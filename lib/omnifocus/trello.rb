@@ -37,7 +37,7 @@ module OmniFocus::Trello
   end
 
   def fetch_trello_cards(token)
-    url = "https://api.trello.com/1/members/my/cards?key=#{KEY}&token=#{token}"
+    url = "https://api.trello.com/1/members/my/cards?customFieldItems=true&key=#{KEY}&token=#{token}"
 
     JSON.parse(open(url).read)
   end
@@ -82,8 +82,20 @@ module OmniFocus::Trello
 			         end
       }
     end
-
+ 
+    start = nil
                    
+    if !card["customFieldItems"].empty?
+	    
+            print "populating field"	  
+        card["customFieldItems"].each { |f| if f["idCustomField"] == "5db275c6fb83ae0c066c9108"
+					       print f["value"]
+					       print f["value"]["date"]
+					      start = f["value"]["date"] 
+    	                                    end
+	                              }
+    end
+
     due          = card["due"]
     board        = boards.find {|candidate| candidate["id"] == card["idBoard"] }
     project_name = board["name"]
@@ -129,24 +141,60 @@ module OmniFocus::Trello
       end
       t = Time.parse(duefix)
    end
-   if today != nil 
-       if t 
+#   if today != nil 
+#       if t 
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :due_date => t, :flagged => flag, :primary_tag => gettag()}
+#       else
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :flagged => flag, :primary_tag => gettag()}
+#       end
+#   else 
+#       if t 
+#          bug_db[project_name][ticket_id] = { :name => title, :note => description, :due_date => t, :flagged => flag}
+#       else
+#          bug_db[project_name][ticket_id] = { :name => title, :note => description,  :flagged => flag}
+#       end
+#   end
+
+#   if today != nil && t !=nil && start != nil 
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => start, :due_date => t, :flagged => flag, :primary_tag => gettag()}
+#   else if today != nil && t !=nil 
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :due_date => t, :flagged => flag, :primary_tag => gettag()}
+#
+#   else if t !=nil && start != nil 
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => start, :due_date => t, :flagged => flag}
+#   else if today != nil && start !=nil 
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => start,  :flagged => flag, :primary_tag => gettag()}
+#   else if today != nil && t == nil && start == nil 
+#         bug_db[project_name][ticket_id] = { :name => title, :note => description, :flagged => flag, :primary_tag => gettag()}
+#   else if t != nil && today == nil && start == nil 
+#          bug_db[project_name][ticket_id] = { :name => title, :note => description, :due_date => t, :flagged => flag}
+#   else if start != nil && t == nil && start == nil 
+#          bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => t, :flagged => flag}
+#   else 
+#          bug_db[project_name][ticket_id] = { :name => title, :note => description,  :flagged => flag}
+#  end
+   if today != nil && t !=nil && start != nil 
+         bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => start, :due_date => t, :flagged => flag, :primary_tag => gettag()}
+   else if today != nil && t !=nil && start == nil 
          bug_db[project_name][ticket_id] = { :name => title, :note => description, :due_date => t, :flagged => flag, :primary_tag => gettag()}
-       else
+
+   else if t !=nil && start != nil && today == nil 
+         bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => start, :due_date => t, :flagged => flag}
+   else if today != nil && start !=nil && t == nil
+         bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => start,  :flagged => flag, :primary_tag => gettag()}
+
+   else if today != nil && t == nil && start == nil 
          bug_db[project_name][ticket_id] = { :name => title, :note => description, :flagged => flag, :primary_tag => gettag()}
-       end
-   else 
-       if t 
+   else if t != nil && today == nil && start == nil 
           bug_db[project_name][ticket_id] = { :name => title, :note => description, :due_date => t, :flagged => flag}
-       else
+   else if start != nil && t == nil && start == nil 
+          bug_db[project_name][ticket_id] = { :name => title, :note => description, :defer_date => t, :flagged => flag}
+   else 
           bug_db[project_name][ticket_id] = { :name => title, :note => description,  :flagged => flag}
-       end
-
-   end
-
   end
 
   def fetch_trello_boards(token)
+    #url = "https://api.trello.com/1/members/my/boards?customFieldItems=true&key=#{KEY}&token=#{token}&lists=open"
     url = "https://api.trello.com/1/members/my/boards?key=#{KEY}&token=#{token}&lists=open"
     JSON.parse(open(url).read)
   end
